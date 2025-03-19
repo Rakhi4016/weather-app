@@ -7,223 +7,244 @@
   <style>
     body {
       font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      color: #333;
       margin: 0;
       padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      background-color: #f4f4f9;
-      transition: background 0.5s ease;
+      min-height: 100vh;
     }
 
     .container {
-      background: rgba(255, 255, 255, 0.9);
+      background: #fff;
       padding: 20px;
-      border-radius: 16px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      text-align: center;
-      width: 320px;
-      position: relative;
-      overflow: hidden;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
     }
 
-    input {
-      width: calc(100% - 24px);
-      padding: 10px;
-      margin-bottom: 10px;
-      border: 1px solid #ddd;
+    h1 {
+      text-align: center;
+      color: #4CAF50;
+      font-size: 24px;
+    }
+
+    input, button {
+      width: calc(100% - 22px);
+      padding: 12px;
+      margin: 5px 0;
       border-radius: 8px;
+      border: 1px solid #ccc;
       font-size: 16px;
-      outline: none;
     }
 
     button {
-      background-color: #4caf50;
+      background-color: #4CAF50;
       color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
       cursor: pointer;
-      font-size: 16px;
-      transition: background 0.3s ease;
+      border: none;
     }
 
     button:hover {
       background-color: #45a049;
     }
 
-    h2 {
-      margin: 10px 0;
-    }
-
-    .weather-info {
+    #weather-info {
+      display: none;
       margin-top: 20px;
     }
 
-    .icon {
-      width: 100px;
-      height: 100px;
+    .forecast {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 20px;
     }
 
-    /* Sparkle effect for sunny */
-    @keyframes sparkle {
-      0% { opacity: 0.5; transform: scale(0.8); }
-      50% { opacity: 1; transform: scale(1); }
-      100% { opacity: 0.5; transform: scale(0.8); }
+    .forecast-item {
+      background-color: #4CAF50;
+      color: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 14px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
 
-    .sparkle {
-      position: absolute;
-      background-color: yellow;
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      animation: sparkle 1.5s infinite ease-in-out;
+    .toggle-theme, .unit-toggle {
+      background-color: #4CAF50;
+      color: #fff;
+      padding: 10px;
+      margin-top: 20px;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
     }
 
-    /* Cloudy effect */
-    .cloud {
-      position: absolute;
-      background-color: #ddd;
-      width: 50px;
-      height: 30px;
-      border-radius: 50%;
-      top: 20px;
-      left: 20px;
-      opacity: 0.7;
+    .hourly-forecast {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      margin-top: 20px;
+      padding-bottom: 10px;
     }
 
-    /* Rain effect */
-    @keyframes rain {
-      0% { transform: translateY(0); }
-      100% { transform: translateY(100px); }
-    }
-
-    .raindrop {
-      position: absolute;
-      background-color: #3498db;
-      width: 2px;
-      height: 10px;
-      top: -20px;
-      left: 50%;
-      animation: rain 1s infinite linear;
-    }
-
-    /* Wind effect */
-    @keyframes wind {
-      0% { transform: translateX(-10px); }
-      100% { transform: translateX(10px); }
-    }
-
-    .wind {
-      position: absolute;
-      background-color: #bbb;
-      width: 40px;
-      height: 3px;
-      top: 50px;
-      left: 0;
-      animation: wind 0.5s infinite alternate ease-in-out;
+    .hourly-item {
+      background-color: #45a049;
+      color: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 14px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      min-width: 80px;
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <input type="text" id="city" placeholder="Enter city..." />
-  <button onclick="getWeather()">Get Weather</button>
+  <h1>🌦️ Weather App</h1>
   
-  <div class="weather-info">
-    <h2 id="location"></h2>
-    <img id="icon" class="icon" src="" alt="" />
-    <p id="description"></p>
-    <p id="temperature"></p>
+  <!-- Input & Buttons -->
+  <input type="text" id="location" placeholder="Enter city..." />
+  <button onclick="getWeather()">Get Weather</button>
+  <button onclick="getCurrentLocation()">📍 Use Current Location</button>
+  
+  <!-- Weather Info -->
+  <div id="weather-info">
+    <h2 id="temperature">--°C</h2>
+    <p id="description">--</p>
+    <p id="wind">💨 Wind: -- km/h</p>
+    <p id="humidity">💧 Humidity: --%</p>
+    <p id="air-quality">🌫️ Air Quality: --</p>
+    <p id="sunrise-sunset">🌅 Sunrise: -- / Sunset: --</p>
+    
+    <!-- 📅 Daily Forecast -->
+    <div class="forecast" id="forecast"></div>
+
+    <!-- ⏳ Hourly Forecast -->
+    <div class="hourly-forecast" id="hourly-forecast"></div>
+    
+    <!-- 🌡️ Unit Toggle -->
+    <div class="unit-toggle" onclick="toggleUnits()">Switch to °F</div>
+
+    <!-- 🌗 Theme Toggle -->
+    <div class="toggle-theme" onclick="toggleTheme()">Toggle Theme</div>
   </div>
 </div>
 
 <script>
-  const apiKey = '1fa939259d52416184d174202250803';
+const API_KEY = '1fa939259d52416184d174202250803';
+const API_URL = 'https://api.weatherapi.com/v1';
 
-  async function getWeather() {
-    const city = document.getElementById('city').value;
-    if (!city) return alert('Please enter a city');
+let isCelsius = true;
+let weatherData = null;
 
-    const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&aqi=no`;
-
-    try {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('City not found');
-      const data = await res.json();
-
-      document.getElementById('location').innerText = `${data.location.name}, ${data.location.country}`;
-      document.getElementById('description').innerText = data.current.condition.text;
-      document.getElementById('temperature').innerText = `${data.current.temp_c}°C`;
-      document.getElementById('icon').src = `https:${data.current.condition.icon}`;
-      
-      clearEffects();
-      handleWeatherEffects(data.current.condition.text.toLowerCase());
-    } catch (error) {
-      alert(error.message);
-    }
+async function getWeather(location = '') {
+  if (!location) {
+    location = document.getElementById('location').value.trim();
   }
 
-  function handleWeatherEffects(condition) {
-    if (condition.includes('sunny')) {
-      createSparkles();
-      document.body.style.background = '#ffeb3b';
-    } else if (condition.includes('cloudy')) {
-      createClouds();
-      document.body.style.background = '#b0bec5';
-    } else if (condition.includes('rain')) {
-      createRain();
-      document.body.style.background = '#90a4ae';
-    } else if (condition.includes('wind')) {
-      createWind();
-      document.body.style.background = '#eceff1';
-    }
+  if (!location) {
+    alert('Please enter a location.');
+    return;
   }
 
-  function createSparkles() {
-    for (let i = 0; i < 10; i++) {
-      const sparkle = document.createElement('div');
-      sparkle.classList.add('sparkle');
-      sparkle.style.top = `${Math.random() * 100}px`;
-      sparkle.style.left = `${Math.random() * 100}px`;
-      document.body.appendChild(sparkle);
-    }
+  try {
+    const response = await fetch(`${API_URL}/forecast.json?key=${API_KEY}&q=${location}&days=3&aqi=yes&alerts=yes`);
+    if (!response.ok) throw new Error('Failed to fetch weather data');
+    weatherData = await response.json(); // Store fetched data globally
+    updateUI();
+  } catch (error) {
+    alert(`Error: ${error.message}`);
   }
+}
 
-  function createClouds() {
-    for (let i = 0; i < 3; i++) {
-      const cloud = document.createElement('div');
-      cloud.classList.add('cloud');
-      cloud.style.left = `${i * 70}px`;
-      document.body.appendChild(cloud);
-    }
+async function getCurrentLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      const { latitude, longitude } = position.coords;
+      await getWeather(`${latitude},${longitude}`);
+    });
+  } else {
+    alert('Geolocation is not supported by your browser.');
   }
+}
 
-  function createRain() {
-    for (let i = 0; i < 20; i++) {
-      const raindrop = document.createElement('div');
-      raindrop.classList.add('raindrop');
-      raindrop.style.left = `${Math.random() * 100}vw`;
-      document.body.appendChild(raindrop);
-    }
-  }
+function updateUI() {
+  if (!weatherData || !weatherData.current) return;
 
-  function createWind() {
-    for (let i = 0; i < 5; i++) {
-      const wind = document.createElement('div');
-      wind.classList.add('wind');
-      wind.style.top = `${i * 20 + 50}px`;
-      document.body.appendChild(wind);
-    }
-  }
+  document.getElementById('weather-info').style.display = 'block';
 
-  function clearEffects() {
-    document.querySelectorAll('.sparkle, .cloud, .raindrop, .wind').forEach(el => el.remove());
+  // 🌡️ Current Weather
+  const temp = isCelsius ? weatherData.current.temp_c : (weatherData.current.temp_c * 9/5) + 32;
+  document.getElementById('temperature').innerText = `${temp.toFixed(1)}°${isCelsius ? 'C' : 'F'}`;
+
+  document.getElementById('description').innerText = weatherData.current.condition.text;
+
+  const windSpeed = isCelsius ? weatherData.current.wind_kph : weatherData.current.wind_mph;
+  document.getElementById('wind').innerText = `💨 Wind: ${windSpeed.toFixed(1)} ${isCelsius ? 'km/h' : 'mph'}`;
+
+  document.getElementById('humidity').innerText = `💧 Humidity: ${weatherData.current.humidity}%`;
+
+  // 🌅 Sunrise and Sunset
+  document.getElementById('sunrise-sunset').innerText = `🌅 Sunrise: ${weatherData.forecast.forecastday[0].astro.sunrise} / Sunset: ${weatherData.forecast.forecastday[0].astro.sunset}`;
+
+  // 🌫️ Air Quality
+  document.getElementById('air-quality').innerText = `🌫️ Air Quality: ${weatherData.current.air_quality.pm2_5 || 'Not available'} µg/m³`;
+
+  // 📅 Update Forecast
+  updateForecast(weatherData.forecast.forecastday);
+
+  // ⏳ Update Hourly Forecast
+  updateHourlyForecast(weatherData.forecast.forecastday[0].hour);
+}
+
+function updateForecast(forecast) {
+  const forecastContainer = document.getElementById('forecast');
+  forecastContainer.innerHTML = '';
+
+  forecast.forEach(day => {
+    const avgTemp = isCelsius ? day.day.avgtemp_c : (day.day.avgtemp_c * 9/5) + 32;
+    forecastContainer.innerHTML += `
+      <div class="forecast-item">
+        ${day.date}<br>
+        Avg Temp: ${avgTemp.toFixed(1)}°${isCelsius ? 'C' : 'F'}
+      </div>
+    `;
+  });
+}
+
+function updateHourlyForecast(hourly) {
+  const container = document.getElementById('hourly-forecast');
+  container.innerHTML = '';
+
+  hourly.forEach(hour => {
+    const temp = isCelsius ? hour.temp_c : (hour.temp_c * 9/5) + 32;
+    container.innerHTML += `
+      <div class="hourly-item">
+        ${hour.time.split(' ')[1]}<br>
+        ${temp.toFixed(1)}°${isCelsius ? 'C' : 'F'}
+      </div>
+    `;
+  });
+}
+
+function toggleUnits() {
+  isCelsius = !isCelsius;
+  document.querySelector('.unit-toggle').innerText = isCelsius ? 'Switch to °F' : 'Switch to °C';
+  
+  // 🔥 Now updates ALL data when switching units!
+  if (weatherData) {
+    updateUI();
   }
+}
+
+function toggleTheme() {
+  document.body.classList.toggle('dark-mode');
+}
 </script>
-
-</body>
-</html>
